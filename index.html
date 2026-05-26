@@ -38,6 +38,7 @@
   }
   .nav .t{font-size:17px;font-weight:600;letter-spacing:-.2px}
   .nav .d{font-size:13px;color:var(--sec);font-weight:400;margin-left:8px}
+  .nav .cancel-btn{font-size:15px;color:var(--tint);background:none;border:none;font-family:inherit;cursor:pointer;display:none;padding:0}
 
   /* content */
   .tab{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;padding-bottom:calc(106px + var(--safe-b));display:none}
@@ -46,7 +47,7 @@
 
   /* segment */
   .seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;margin:14px 0}
-  .seg button{flex:1;padding:7px 0;border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:var(--sec);font-family:inherit}
+  .seg button{flex:1;padding:7px 0;border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--sec);font-family:inherit}
   .seg button.on{background:var(--card);color:var(--label);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 .5px rgba(0,0,0,.04)}
   .seg button.exp.on{color:var(--red)}.seg button.inc.on{color:var(--green)}
 
@@ -65,8 +66,8 @@
   .cc.sel:active{opacity:.85}
   .cc .ci{font-size:24px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:var(--fill);border-radius:50%}
   .cc.sel .ci{background:rgba(255,255,255,.2)}
-  .cc.add{background:transparent;border:1.5px dashed var(--muted);color:var(--muted)}
-  .cc.add:active{background:var(--fill);border-color:transparent}
+  .cc.mg{background:transparent;border:1.5px dashed var(--muted);color:var(--sec)}
+  .cc.mg:active{background:var(--fill);border-color:transparent}
 
   /* inputs */
   .row{display:flex;gap:8px;margin-bottom:10px}
@@ -79,16 +80,19 @@
   .btn{padding:12px;border:none;border-radius:50px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-.2px;transition:all .15s}
   .btn:active{opacity:.6}
   .btn.prim{background:var(--tint);color:#fff;width:100%}
+  .btn.prim.upd{background:var(--green)}
   .chip{padding:6px 12px;font-size:12px;font-weight:500;border-radius:50px;border:none;background:var(--fill);color:var(--sec);cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
   .chip.on{background:var(--label);color:#fff}
   .chip:active{opacity:.7}
-  .btn.exp{background:var(--tint);color:#fff;border:none;padding:8px 16px;border-radius:50px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+  .btn.exp{padding:7px 14px;border-radius:50px;border:none;background:var(--tint);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:4px}
   .btn.exp:active{opacity:.6}
 
   /* filter */
   .fbar{margin:14px 0}
-  .frow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .frow{display:flex;gap:6px;align-items:center;margin-bottom:8px}
   .frow:last-child{margin-bottom:0}
+  .frow.scroll-row{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .frow.scroll-row::-webkit-scrollbar{display:none}
   .fdinp{padding:6px 8px;border:none;border-radius:8px;font-size:12px;font-family:inherit;background:var(--card);color:var(--label);outline:none;-webkit-appearance:none;text-align:center;flex:1;min-width:100px}
   .fdinp:focus{box-shadow:0 0 0 2px rgba(0,122,255,.25)}
   .fsp{flex:1}
@@ -96,30 +100,48 @@
   /* txns */
   .group{margin:12px 0;background:var(--card);border-radius:var(--r2);overflow:hidden}
   .ghdr{font-size:12px;color:var(--sec);padding:0 16px 6px;font-weight:500}
-  .tcell{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:.5px solid var(--sep);transition:background .1s}
+  .tcell{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:.5px solid var(--sep);transition:background .1s;cursor:pointer}
   .tcell:last-child{border-bottom:none}
   .tcell:active{background:var(--fill)}
   .tcell .icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .tcell .info{flex:1;min-width:0}
+  .tcell .info{flex:1;min-width:0;pointer-events:none}
   .tcell .ttl{font-size:17px;font-weight:400;letter-spacing:-.2px}
   .tcell .sub{font-size:12px;color:var(--sec);margin-top:2px}
-  .tcell .val{font-size:18px;font-weight:400;white-space:nowrap;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+  .tcell .val{font-size:18px;font-weight:400;white-space:nowrap;letter-spacing:-.3px;font-variant-numeric:tabular-nums;pointer-events:none}
   .tcell .val.g{color:var(--green)}.tcell .val.r{color:var(--red)}
-  .del{width:26px;height:26px;border-radius:50%;border:none;background:rgba(255,59,48,.1);color:var(--red);font-size:13px;cursor:pointer;flex-shrink:0;transition:all .15s}
+  .del{width:26px;height:26px;border-radius:50%;border:none;background:rgba(255,59,48,.1);color:var(--red);font-size:13px;cursor:pointer;flex-shrink:0;transition:all .15s;z-index:1}
   .del:active{background:rgba(255,59,48,.25)}
 
-  .empty{text-align:center;padding:80px 20px;color:var(--muted)}
-  .empty .ei{font-size:40px;margin-bottom:12px;opacity:.5}
-  .empty p{font-size:14px}
+  .empty{text-align:center;padding:80px 20px 40px;color:var(--muted)}
+  .empty .ei{font-size:40px;margin-bottom:12px;opacity:.6}
+  .empty .et{font-size:15px;font-weight:500;color:var(--sec);margin-bottom:6px}
+  .empty .eh{font-size:13px;line-height:1.6}
 
   /* stats */
-  .scards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 18px}
-  .sc{background:var(--card);padding:16px 10px;border-radius:var(--r2);text-align:center}
-  .sc .v{font-size:21px;font-weight:600;margin-top:4px;letter-spacing:-.3px}
+  .scards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 18px}
+  .sc{background:var(--card);padding:16px 12px;border-radius:var(--r2)}
   .sc .l{font-size:11px;color:var(--sec);font-weight:400}
+  .sc .v{font-size:21px;font-weight:600;margin-top:2px;letter-spacing:-.3px}
   .sc.inc .v{color:var(--green)}.sc.exp .v{color:var(--red)}
-  .sc.bal{background:#1C1C1E}
-  .sc.bal .l{color:rgba(255,255,255,.5)}.sc.bal .v{color:#fff;font-size:23px}
+
+  .bal-card{
+    grid-column:1 / -1;
+    background:linear-gradient(135deg, #1a1f2e 0%, #1e2435 40%, #1a1f2e 100%);
+    border-radius:var(--r2);padding:18px 16px;
+    position:relative;overflow:hidden;
+  }
+  .bal-card::before{
+    content:'';position:absolute;top:0;left:16px;right:16px;
+    height:2px;border-radius:0 0 2px 2px;
+    background:linear-gradient(90deg, #34C759, #30B0C7, #007AFF);
+    opacity:.7;
+  }
+  .bal-card .l{font-size:11px;color:rgba(255,255,255,.45);font-weight:400}
+  .bal-card .v{font-size:26px;font-weight:500;color:#fff;margin-top:4px;letter-spacing:-.3px}
+  .bal-card .sub-row{display:flex;gap:16px;margin-top:10px}
+  .bal-card .sub-item{font-size:12px;color:rgba(255,255,255,.5)}
+  .bal-card .sub-item span{font-weight:500;font-variant-numeric:tabular-nums}
+  .bal-card .sub-item span.inc{color:#34C759}.bal-card .sub-item span.exp{color:#FF3B30}
 
   .chart{background:var(--card);border-radius:var(--r2);padding:20px 16px;margin-bottom:12px}
   .chart canvas{max-height:200px}
@@ -144,33 +166,58 @@
 
   /* sheet */
   .shim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;display:none;align-items:flex-end;justify-content:center}
-  .shim.show{display:flex;animation:fi .25s}
+  .shim.show{display:flex;animation:fi .2s}
   @keyframes fi{from{opacity:0}to{opacity:1}}
-  .sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:72vh;overflow-y:auto;padding:0 0 28px;animation:su .35s cubic-bezier(.32,.72,0,1)}
+  .sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:72vh;overflow-y:auto;padding:0 0 28px;animation:su .3s cubic-bezier(.32,.72,0,1)}
   @keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .sheet .sh{width:32px;height:4px;background:var(--muted);border-radius:2px;margin:10px auto 0}
   .sheet .st{font-size:17px;font-weight:600;text-align:center;padding:12px 16px;letter-spacing:-.2px}
   .sheet .sb{padding:0 20px}
 
+  /* confirm dialog */
+  .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:250;display:none;align-items:center;justify-content:center;animation:fi .2s}
+  .confirm-overlay.show{display:flex}
+  .confirm-box{background:var(--card);border-radius:14px;width:calc(100% - 80px);max-width:300px;text-align:center;overflow:hidden;animation:pop .25s cubic-bezier(.32,.72,0,1)}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .confirm-box .cmsg{padding:24px 20px 8px;font-size:15px;line-height:1.5}
+  .confirm-box .cact{display:flex;border-top:.5px solid var(--sep);margin-top:16px}
+  .confirm-box .cact button{flex:1;padding:13px;border:none;background:none;font-size:16px;font-family:inherit;cursor:pointer;transition:background .15s}
+  .confirm-box .cact button:active{background:var(--fill)}
+  .confirm-box .cact .cok{color:var(--red);font-weight:600}
+  .confirm-box .cact .ccancel{color:var(--tint);border-right:.5px solid var(--sep)}
+
   /* tab bar */
   .tbc{position:fixed;bottom:calc(16px + var(--safe-b));left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 44px);max-width:370px}
   .tb{display:flex;background:rgba(246,246,250,.84);backdrop-filter:saturate(180%) blur(28px);-webkit-backdrop-filter:saturate(180%) blur(28px);border-radius:50px;padding:5px;box-shadow:0 2px 20px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.06)}
-  .tb button{flex:1;padding:8px 0 6px;border:none;background:none;color:var(--sec);font-size:10px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:inherit;border-radius:50px;position:relative;z-index:1;transition:color .2s}
+  .tb button{flex:1;padding:8px 0 6px;border:none;background:none;color:var(--sec);font-size:10px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:inherit;border-radius:50px;position:relative;z-index:1;transition:color .15s}
   .tb button.on{color:var(--label);font-weight:600}
   .tb button.on::before{content:'';position:absolute;inset:2px 5px;background:var(--card);border-radius:50px;z-index:-1;box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .tb button svg{width:24px;height:24px}
 
-  /* toast */
-  .tst{position:fixed;top:calc(52px + var(--safe-t));left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(28,28,30,.9);color:#fff;padding:10px 20px;border-radius:50px;font-size:14px;font-weight:500;z-index:300;opacity:0;transition:all .35s cubic-bezier(.32,.72,0,1);pointer-events:none}
-  .tst.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* toast with action */
+  .toast-area{position:fixed;top:calc(52px + var(--safe-t));left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+  .tst{background:rgba(28,28,30,.92);color:#fff;padding:10px 20px;border-radius:50px;font-size:14px;font-weight:500;opacity:0;transform:translateY(-10px);transition:all .25s cubic-bezier(.32,.72,0,1);pointer-events:auto;display:flex;align-items:center;gap:12px}
+  .tst.show{opacity:1;transform:translateY(0)}
+  .tst .undo-btn{background:none;border:none;color:var(--tint);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;padding:0}
 
   @media(min-width:500px){body{max-width:430px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,.15)}.tbc{max-width:380px}}
 </style>
 </head>
 <body>
 
-<div class="nav"><span class="t" id="navT">记账</span><span class="d" id="navD"></span></div>
-<div class="tst" id="tst"></div>
+<div class="nav"><span class="t" id="navT">记账</span><button class="cancel-btn" id="cancelEdit" onclick="cancelEdit()">取消</button><span class="d" id="navD"></span></div>
+<div class="toast-area"><div class="tst" id="tst"></div></div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="cmsg" id="confirmMsg"></div>
+    <div class="cact">
+      <button class="ccancel" id="confirmNo">取消</button>
+      <button class="cok" id="confirmYes">确定</button>
+    </div>
+  </div>
+</div>
 
 <!-- RECORD -->
 <div class="tab on" id="tab-record">
@@ -185,7 +232,7 @@
     <input type="date" id="dateInput" class="inp" style="text-align:center">
     <input type="text" id="noteInput" class="inp" placeholder="备注（选填）" maxlength="50">
   </div>
-  <button class="btn prim" onclick="addTransaction()">记录</button>
+  <button class="btn prim" id="recordBtn" onclick="addTransaction()">记录</button>
 </div>
 
 <!-- DETAIL -->
@@ -198,23 +245,27 @@
       <button class="chip dp" data-p="30d" onclick="setDatePreset('30d',this)">近30天</button>
       <button class="chip dp" data-p="custom" onclick="setDatePreset('custom',this)">自定义</button>
       <span class="fsp"></span>
-      <button class="btn exp" onclick="exportExcel()">导出</button>
+      <button class="btn exp" onclick="exportExcel()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>导出</button>
     </div>
     <div class="frow" id="customDateRow" style="display:none">
       <input type="date" id="fdFrom" class="fdinp" onchange="renderDetail()">
-      <span style="font-size:12px;color:var(--sec)">至</span>
+      <span style="font-size:12px;color:var(--sec);flex:0">至</span>
       <input type="date" id="fdTo" class="fdinp" onchange="renderDetail()">
+      <span class="fsp"></span>
     </div>
-    <div class="frow">
+    <div class="frow scroll-row">
       <button class="chip on tc" data-type="all" onclick="setFilterType('all',this)">全部</button>
       <button class="chip tc" data-type="expense" onclick="setFilterType('expense',this)">支出</button>
       <button class="chip tc" data-type="income" onclick="setFilterType('income',this)">收入</button>
-      <span style="color:var(--muted);margin:0 2px;font-size:13px">|</span>
-      <span id="catChips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+      <span id="catChips" style="display:flex;gap:6px"></span>
     </div>
   </div>
   <div id="txnList"></div>
-  <div class="empty" id="emptyDetail"><div class="ei">📋</div><p>暂无记录</p></div>
+  <div class="empty" id="emptyDetail">
+    <div class="ei">📋</div>
+    <div class="et">暂无记录</div>
+    <div class="eh">切换到「记账」页<br>开始记录你的第一笔账单</div>
+  </div>
 </div>
 
 <!-- STATS -->
@@ -228,7 +279,14 @@
   <div class="scards">
     <div class="sc inc"><div class="l">收入</div><div class="v" id="sumIncome">¥0</div></div>
     <div class="sc exp"><div class="l">支出</div><div class="v" id="sumExpense">¥0</div></div>
-    <div class="sc bal"><div class="l">结余</div><div class="v" id="sumBalance">¥0</div></div>
+    <div class="bal-card">
+      <div class="l">本月结余</div>
+      <div class="v" id="sumBalance">¥0</div>
+      <div class="sub-row">
+        <div class="sub-item">收入 <span class="inc" id="balInc">¥0</span></div>
+        <div class="sub-item">支出 <span class="exp" id="balExp">¥0</span></div>
+      </div>
+    </div>
   </div>
   <div class="chart"><div class="ct">支出分类</div><canvas id="pieChart"></canvas></div>
   <div class="chart"><div class="ct">近六月趋势</div><canvas id="trendChart"></canvas></div>
@@ -237,13 +295,13 @@
 
 <!-- TAB BAR -->
 <div class="tbc"><div class="tb">
-  <button class="on" onclick="switchTab('record',event)">
+  <button class="on" id="tbRecord" onclick="switchTab('record',event)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>记账
   </button>
-  <button onclick="switchTab('detail',event)">
+  <button id="tbDetail" onclick="switchTab('detail',event)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>明细
   </button>
-  <button onclick="switchTab('stats',event)">
+  <button id="tbStats" onclick="switchTab('stats',event)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>统计
   </button>
 </div></div>
@@ -266,21 +324,24 @@ const DC = [
 function ld(){let r=localStorage.getItem('bk');return r?JSON.parse(r):{transactions:[],categories:[...DC]}}
 function sv(d){localStorage.setItem('bk',JSON.stringify(d))}
 let app=ld(),curType='expense',selCat=null,fType='all',fCat=null,dPreset='month',sYear,sMonth;
+let _editingId=null,_lastUndo=null,_undoTimer=null,_confirmResolve=null;
 function gc(t){return app.categories.filter(c=>c.type===t)}
 const $=id=>document.getElementById(id),fm=n=>(n||0).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}),gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8),nowStr=()=>new Date().toISOString().slice(0,10);
-function ts(m){let t=$('tst');t.textContent=m;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),1800)}
+function ts(m,u){clearTimeout(_undoTimer);let t=$('tst');t.innerHTML=u?`${m} <button class="undo-btn" onclick="undoLast()">${u}</button>`:m;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>{t.classList.remove('show');_lastUndo=null},u?4000:2200)}
 
 // === HEADER ===
 (function(){let n=new Date();$('navD').textContent=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 周${'日一二三四五六'[n.getDay()]}`})();
 
 // === TABS ===
 function switchTab(t,e){
+  cancelEdit();
   document.querySelectorAll('.tab').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.tb button').forEach(el=>el.classList.remove('on'));
   $('tab-'+t).classList.add('on');
-  let b=(e&&e.target)?e.target.closest('.tb button'):document.querySelector(`.tb button[onclick*="${t}"]`);
-  if(b)b.classList.add('on');
+  let btn=$({record:'tbRecord',detail:'tbDetail',stats:'tbStats'}[t]);
+  if(btn)btn.classList.add('on');
   $('navT').textContent={record:'记账',detail:'明细',stats:'统计'}[t];
+  $('cancelEdit').style.display='none';
   if(t==='record'){renderCats();setTimeout(()=>$('amountInput').focus(),300)}
   if(t==='detail'){renderCatChips();renderDetail()}
   if(t==='stats'){initSM();renderStats()}
@@ -291,17 +352,63 @@ $('amountInput').addEventListener('input',function(){let v=this.value.replace(/[
 
 // === TYPE & CATS ===
 function setType(t){curType=t;selCat=null;document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));document.querySelector(`.seg .${t==='expense'?'exp':'inc'}`).classList.add('on');renderCats()}
-function renderCats(){let g=$('categoryGrid'),cs=gc(curType);g.innerHTML=cs.map(c=>`<div class="cc${c.id===selCat?' sel':''}" onclick="selectCat('${c.id}')"><div class="ci">${c.icon}</div><span>${c.name}</span></div>`).join('')+`<div class="cc add" onclick="openCatManage()"><div class="ci" style="background:transparent;font-size:20px">+</div><span>管理</span></div>`}
+function renderCats(){let g=$('categoryGrid'),cs=gc(curType);g.innerHTML=cs.map(c=>`<div class="cc${c.id===selCat?' sel':''}" onclick="selectCat('${c.id}')"><div class="ci">${c.icon}</div><span>${c.name}</span></div>`).join('')+`<div class="cc mg" onclick="openCatManage()"><div class="ci" style="background:transparent;font-size:20px">⚙</div><span>编辑</span></div>`}
 function selectCat(id){selCat=id;renderCats()}
 
-// === ADD ===
+// === EDIT MODE ===
+function startEdit(txn){
+  _editingId=txn.id;
+  if(txn.type!==curType)setType(txn.type);
+  $('amountInput').value=txn.amount;
+  $('dateInput').value=txn.date;
+  $('noteInput').value=txn.note||'';
+  selCat=txn.categoryId;
+  renderCats();
+  $('recordBtn').textContent='更新';
+  $('recordBtn').classList.add('upd');
+  $('navT').textContent='编辑';
+  $('cancelEdit').style.display='block';
+  switchTab('record');
+}
+function cancelEdit(){
+  if(!_editingId)return;
+  _editingId=null;$('amountInput').value='';$('noteInput').value='';selCat=null;
+  $('recordBtn').textContent='记录';$('recordBtn').classList.remove('upd');
+  $('navT').textContent='记账';$('cancelEdit').style.display='none';
+  renderCats();
+}
+
+// === ADD / UPDATE ===
 function addTransaction(){
   let v=parseFloat($('amountInput').value);
   if(!v||v<=0){shake($('amountInput'));return}
   if(!selCat){let f=gc(curType)[0];if(f)selCat=f.id;else{ts('请先添加分类');return}}
-  app.transactions.unshift({id:gid(),type:curType,amount:v,categoryId:selCat,date:$('dateInput').value||nowStr(),note:$('noteInput').value.trim(),createdAt:Date.now()});
-  sv(app);$('amountInput').value='';$('noteInput').value='';selCat=null;renderCats();ts('已记录')
+
+  if(_editingId){
+    // Update existing
+    let txn=app.transactions.find(t=>t.id===_editingId);
+    if(txn){
+      txn.type=curType;txn.amount=v;txn.categoryId=selCat;
+      txn.date=$('dateInput').value||nowStr();txn.note=$('noteInput').value.trim();
+    }
+    sv(app);cancelEdit();$('amountInput').value='';$('noteInput').value='';selCat=null;renderCats();
+    ts('已更新');
+  }else{
+    // Add new
+    let txn={id:gid(),type:curType,amount:v,categoryId:selCat,date:$('dateInput').value||nowStr(),note:$('noteInput').value.trim(),createdAt:Date.now()};
+    app.transactions.unshift(txn);
+    sv(app);$('amountInput').value='';$('noteInput').value='';selCat=null;renderCats();
+    _lastUndo=txn;ts('已记录','撤销');
+  }
 }
+function undoLast(){
+  if(!_lastUndo)return;
+  app.transactions=app.transactions.filter(t=>t.id!==_lastUndo.id);
+  sv(app);_lastUndo=null;
+  let t=$('tst');t.classList.remove('show');
+  ts('已撤销');
+}
+
 function shake(e){e.style.animation='none';void e.offsetHeight;e.style.animation='shake .45s ease'}
 let sc=document.createElement('style');sc.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}';document.head.appendChild(sc);
 
@@ -335,17 +442,35 @@ function renderDetail(){
     h+=`<div class="ghdr" style="margin-top:12px">${dt} · <span style="color:${tot>=0?'var(--green)':'var(--red)'}">${lb}</span></div>`;
     h+='<div class="group">';
     items.forEach(t=>{let c=app.categories.find(c=>c.id===t.categoryId)||{};h+=`
-    <div class="tcell">
+    <div class="tcell" onclick="startEdit(${JSON.stringify(t).replace(/"/g,'&quot;')})">
       <div class="icon" style="background:${c.color||'#E5E5EA'}18;color:${c.color||'#8E8E93'}">${c.icon||'⋯'}</div>
       <div class="info"><div class="ttl">${c.name||'未分类'}</div><div class="sub">${t.note?eh(t.note):(t.type==='income'?'收入':'支出')}</div></div>
       <div class="val ${t.type==='income'?'g':'r'}">${t.type==='income'?'+':'-'}¥${fm(t.amount)}</div>
-      <button class="del" onclick="delTxn('${t.id}')">✕</button>
+      <button class="del" onclick="event.stopPropagation();delTxn('${t.id}')">✕</button>
     </div>`});
     h+='</div>'
   }$('txnList').innerHTML=h
 }
 function eh(s){let d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function delTxn(id){if(!confirm('删除这条记录？'))return;app.transactions=app.transactions.filter(t=>t.id!==id);sv(app);renderDetail()}
+function delTxn(id){
+  showConfirm('删除这条记录？').then(ok=>{
+    if(!ok)return;
+    app.transactions=app.transactions.filter(t=>t.id!==id);
+    if(_editingId===id)cancelEdit();
+    sv(app);renderDetail();ts('已删除');
+  });
+}
+
+// === CUSTOM CONFIRM ===
+function showConfirm(msg){
+  return new Promise(resolve=>{
+    $('confirmMsg').textContent=msg;$('confirmOverlay').classList.add('show');
+    _confirmResolve=resolve;
+  });
+}
+$('confirmNo').addEventListener('click',()=>{$('confirmOverlay').classList.remove('show');if(_confirmResolve)_confirmResolve(false);_confirmResolve=null});
+$('confirmYes').addEventListener('click',()=>{$('confirmOverlay').classList.remove('show');if(_confirmResolve)_confirmResolve(true);_confirmResolve=null});
+$('confirmOverlay').addEventListener('click',function(e){if(e.target===this){this.classList.remove('show');if(_confirmResolve)_confirmResolve(false);_confirmResolve=null}});
 
 // === EXPORT ===
 function exportExcel(){
@@ -353,21 +478,24 @@ function exportExcel(){
   let{f,to}=getDR(),lb=f===to?f:`${f}至${to}`,rows=[['日期','类型','分类','金额','备注']],inc=0,exp=0;
   txns.forEach(t=>{let c=app.categories.find(c=>c.id===t.categoryId);rows.push([t.date,t.type==='income'?'收入':'支出',c?c.name:'未分类',t.amount,t.note||'']);t.type==='income'?inc+=t.amount:exp+=t.amount});
   rows.push([],['','','收入合计',inc,''],['','','支出合计',exp,''],['','','结余',inc-exp,'']);
-  let ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:12},{wch:8},{wch:12},{wch:12},{wch:22}];
+  let wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:8},{wch:12},{wch:12},{wch:22}];
   for(let r=rows.length-2;r<rows.length;r++)for(let c=0;c<5;c++){let cl=XLSX.utils.encode_cell({r,c});if(ws[cl])ws[cl].s={font:{bold:true}}}
-  XLSX.writeFile(XLSX.utils.book_new(),`${lb}.xlsx`)
+  XLSX.utils.book_append_sheet(wb,ws,'账单');
+  XLSX.writeFile(wb,`${lb}.xlsx`);
 }
 
 // === STATS ===
 function initSM(){let n=new Date();sYear=n.getFullYear();sMonth=n.getMonth()+1;syncSM()}
 function syncSM(){$('statsMonth').value=`${sYear}-${String(sMonth).padStart(2,'0')}`;$('statsMonthLabel').textContent=`${sYear}年${sMonth}月`}
-function shiftMonth(d){sMonth+=d;if(sMonth>12){sMonth=1;sYear++}if(sMonth<1){sMonth=12;sYear--}syncSM();renderStats()}
+function shiftMonth(d){sMonth+=d;if(sMonth>12){sMonth=1;sYear++}if(sMonth<1){sMonth=12;sYear--}if(sYear>new Date().getFullYear()+2||sYear<2000)return;syncSM();renderStats()}
 let pc=null,tcChart=null;
 function renderStats(){
   let m=$('statsMonth').value,txns=app.transactions.filter(t=>t.date.startsWith(m));
   let inc=txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   let exp=txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   $('sumIncome').textContent=`¥${fm(inc)}`;$('sumExpense').textContent=`¥${fm(exp)}`;$('sumBalance').textContent=`${inc-exp>=0?'+':''}¥${fm(inc-exp)}`;
+  $('balInc').textContent=`¥${fm(inc)}`;$('balExp').textContent=`¥${fm(exp)}`;
 
   let cm={};txns.filter(t=>t.type==='expense').forEach(t=>{let c=app.categories.find(c=>c.id===t.categoryId),n=c?c.name:'未分类',cl=c?c.color:'#8E8E93';if(!cm[n])cm[n]={a:0,cl};cm[n].a+=t.amount});
   let lbs=Object.keys(cm),dt=lbs.map(k=>cm[k].a),cls=lbs.map(k=>cm[k].cl);
@@ -395,9 +523,9 @@ function openCatManage(){
     <div style="border-top:.5px solid var(--sep);padding-top:14px">
       <div class="lbl" style="margin-bottom:8px">添加新分类</div>
       <div class="row"><input type="text" id="ncName" class="inp" placeholder="名称" maxlength="6"><input type="text" id="ncIcon" class="inp" placeholder="图标" maxlength="4" style="flex:0 0 60px"></div>
-      <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--sec)">颜色</span>
-        <div id="clrOpts" style="display:flex;gap:6px">${['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55'].map(c=>`<div style="width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;background:${c}" data-c="${c}" onclick="selClr('${c}',this)"></div>`).join('')}</div>
+        <div id="clrOpts" style="display:flex;gap:6px;flex-wrap:wrap">${['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55'].map(c=>`<div style="width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;background:${c}" data-c="${c}" onclick="selClr('${c}',this)"></div>`).join('')}</div>
       </div>
       <input type="hidden" id="ncColor" value="#FF3B30">
       <button class="btn prim" onclick="addCategory()">添加</button>
@@ -410,12 +538,18 @@ function openCatManage(){
 function switchCMT(t){document.querySelectorAll('.cmt').forEach(b=>b.classList.remove('on'));document.querySelector(`.cmt[data-ct="${t}"]`).classList.add('on');let cs=gc(t);$('catMgrList').innerHTML=cs.map(c=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--fill);border-radius:10px;margin-bottom:6px;font-size:14px"><span>${c.icon} ${c.name}</span><button onclick="deleteCategory('${c.id}')" style="background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:4px 8px;border-radius:6px">删除</button></div>`).join('')||'<p style="color:var(--sec);font-size:13px;text-align:center;padding:12px">暂无分类</p>'}
 function selClr(cl,el){document.querySelectorAll('#clrOpts div').forEach(d=>{d.style.borderColor='transparent';d.style.transform=''});el.style.borderColor='#000';el.style.transform='scale(1.15)';$('ncColor').value=cl}
 function addCategory(){let n=$('ncName').value.trim();if(!n){ts('请输入分类名称');return}let ic=$('ncIcon').value.trim()||'⋯',cl=$('ncColor').value,at=document.querySelector('.cmt.on');app.categories.push({id:gid(),name:n,type:at?at.dataset.ct:curType,icon:ic,color:cl});sv(app);openCatManage();renderCats()}
-function deleteCategory(id){let c=app.categories.find(c=>c.id===id);if(!c)return;let used=app.transactions.some(t=>t.categoryId===id);if(!confirm(used?`分类"${c.name}"有关联记录，删除后显示为"未分类"。确定？`:`确定删除"${c.name}"？`))return;app.categories=app.categories.filter(c=>c.id!==id);sv(app);openCatManage();renderCats()}
+function deleteCategory(id){let c=app.categories.find(c=>c.id===id);if(!c)return;let used=app.transactions.some(t=>t.categoryId===id);
+  showConfirm(used?`分类"${c.name}"有关联记录，删除后显示为"未分类"。确定？`:`确定删除分类"${c.name}"？`).then(ok=>{
+    if(!ok)return;
+    app.categories=app.categories.filter(c=>c.id!==id);
+    sv(app);openCatManage();renderCats();
+  });
+}
 function closeModal(){$('modalOverlay').classList.remove('show')}
 
 // === INIT ===
 $('dateInput').value=nowStr();renderCats();renderCatChips();initSM();renderStats();
-if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{let c=r.clone();caches.open('bkv4').then(ca=>ca.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
+if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{let c=r.clone();caches.open('bkv5').then(ca=>ca.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
 </script>
 </body>
 </html>
