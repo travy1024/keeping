@@ -4,746 +4,716 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="记账本">
-<meta name="theme-color" content="#F7F4EF">
-<title>记账本</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="light-content">
+<meta name="apple-mobile-web-app-title" content="记账">
+<meta name="theme-color" content="#F2F2F7">
+<title>记账</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #F7F4EF;
-    --card: #FFFFFF;
-    --card-hover: #FAFAF8;
-    --text: #2D2B28;
-    --text-secondary: #8B8680;
-    --text-muted: #BFBBB4;
-    --border: #EBE7E0;
-    --border-light: #F2EFEA;
-    --income: #2EBB7B;
-    --income-bg: #EBF9F2;
-    --expense: #F56165;
-    --expense-bg: #FEF0F0;
-    --accent: #4A392C;
-    --accent-light: #8B7355;
-    --gold: #D4A853;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
-    --shadow: 0 2px 8px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.04);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
-    --radius: 20px;
-    --radius-md: 14px;
-    --radius-sm: 10px;
-    --radius-xs: 8px;
+    /* iOS system palette */
+    --red: #FF3B30;     --orange: #FF9500;    --yellow: #FFCC00;
+    --green: #34C759;   --mint: #00C7BE;      --teal: #30B0C7;
+    --cyan: #32ADE6;    --blue: #007AFF;       --indigo: #5856D6;
+    --purple: #AF52DE;  --pink: #FF2D55;       --brown: #A2845E;
+
+    /* Semantic */
+    --bg: #F2F2F7;
+    --bg-elevated: #FFFFFF;
+    --bg-grouped: #F2F2F7;
+    --separator: #E5E5EA;
+    --separator-opaque: #C6C6C8;
+    --label: #000000;
+    --label-secondary: #3C3C43;
+    --label-tertiary: #3C3C43;
+    --label-quaternary: #8E8E93;
+    --placeholder: #C7C7CC;
+    --fill-tertiary: #E5E5EA;
+    --fill-quaternary: #F2F2F7;
+    --tint: #007AFF;
+
+    --income: #34C759;
+    --expense: #FF3B30;
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-top: env(safe-area-inset-top, 0px);
-    --tab-height: 64px;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--label);
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     user-select: none;
     -webkit-user-select: none;
     height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-image: radial-gradient(ellipse at 50% 0%, rgba(212,168,83,.06) 0%, transparent 60%);
   }
 
-  /* ─── Header ─── */
-  .app-header {
-    padding: 20px 24px 14px;
-    padding-top: calc(20px + var(--safe-top));
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  /* ── Navigation Bar ── */
+  .nav-bar {
     flex-shrink: 0;
+    background: rgba(242,242,247,.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: .5px solid var(--separator);
+    padding: 0 16px;
+    padding-top: calc(12px + var(--safe-top));
+    padding-bottom: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    min-height: calc(44px + var(--safe-top));
   }
-  .app-header .logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -.3px;
+  .nav-bar .nav-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -.2px;
+    color: var(--label);
   }
-  .app-header .today {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 500;
+  .nav-bar .nav-subtitle {
+    font-size: 15px;
+    color: var(--label-secondary);
+    font-weight: 400;
   }
 
-  /* ─── Tab Content ─── */
+  /* ── Large Title ── */
+  .large-title {
+    flex-shrink: 0;
+    padding: 8px 20px 12px;
+    padding-top: 6px;
+  }
+  .large-title h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+    color: var(--label);
+    line-height: 1.1;
+  }
+  .large-title .sub {
+    font-size: 15px;
+    color: var(--label-secondary);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  /* ── Tab Content ── */
   .tab-content {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding: 0 20px;
-    padding-bottom: calc(var(--tab-height) + 20px + var(--safe-bottom));
+    padding: 0 16px;
+    padding-bottom: calc(88px + var(--safe-bottom));
     display: none;
   }
   .tab-content.active { display: block; }
   .tab-content::-webkit-scrollbar { display: none; }
 
-  /* ─── Floating Tab Bar ─── */
-  .tab-bar-wrap {
-    position: fixed;
-    bottom: calc(8px + var(--safe-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    width: calc(100% - 48px);
-    max-width: 380px;
-  }
-  .tab-bar {
+  /* ── iOS Segmented Control ── */
+  .segmented-control {
     display: flex;
-    background: var(--card);
-    border-radius: 50px;
-    padding: 6px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.1), 0 0 0 1px rgba(0,0,0,.04);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--fill-tertiary);
+    border-radius: 9px;
+    padding: 2px;
+    margin-bottom: 20px;
   }
-  .tab-btn {
+  .segmented-control button {
     flex: 1;
-    padding: 10px 0;
+    padding: 7px 0;
     border: none;
-    background: none;
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    cursor: pointer;
-    transition: all .3s cubic-bezier(.4,0,.2,1);
-    position: relative;
-    z-index: 1;
-    -webkit-tap-highlight-color: transparent;
-    border-radius: 50px;
-  }
-  .tab-btn.active {
-    color: var(--text);
-    font-weight: 600;
-  }
-  .tab-btn.active::before {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    background: var(--bg);
-    border-radius: 50px;
-    z-index: -1;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-  .tab-btn svg { width: 22px; height: 22px; }
-
-  /* ─── Type Segment ─── */
-  .type-segment {
-    display: flex;
-    background: var(--card);
-    border-radius: 50px;
-    padding: 4px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow);
-    position: relative;
-  }
-  .type-segment button {
-    flex: 1;
-    padding: 11px 0;
-    border: none;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .3s cubic-bezier(.4,0,.2,1);
-    background: transparent;
-    color: var(--text-secondary);
-    position: relative;
-    z-index: 1;
-    letter-spacing: .3px;
-  }
-  .type-segment button.active {
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-  }
-  .type-segment button.type-expense.active { background: var(--expense); }
-  .type-segment button.type-income.active { background: var(--income); }
-
-  /* ─── Hero Amount ─── */
-  .amount-hero {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  .amount-hero .amount-label {
+    border-radius: 7px;
     font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-    letter-spacing: .5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s ease;
+    background: transparent;
+    color: var(--label-secondary);
+    font-family: inherit;
+    letter-spacing: -.1px;
   }
-  .amount-hero .amount-display {
+  .segmented-control button.active {
+    background: var(--bg-elevated);
+    color: var(--label);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 0 rgba(0,0,0,.04), 0 0 0 .5px rgba(0,0,0,.04);
+  }
+  .segmented-control button.expense-btn.active { color: var(--expense); }
+  .segmented-control button.income-btn.active { color: var(--income); }
+
+  /* ── Amount Input (iOS calculator feel) ── */
+  .amount-area {
+    text-align: center;
+    padding: 20px 0 24px;
+  }
+  .amount-area .hint {
+    font-size: 15px;
+    color: var(--label-secondary);
+    margin-bottom: 10px;
+    font-weight: 400;
+    letter-spacing: -.2px;
+  }
+  .amount-area .amount-row {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
   }
-  .amount-hero .currency {
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--text-muted);
+  .amount-area .currency {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--label-quaternary);
   }
-  .amount-hero input {
-    width: 180px;
+  .amount-area input {
+    width: 200px;
     border: none;
     outline: none;
-    font-size: 48px;
-    font-weight: 700;
+    font-size: 56px;
+    font-weight: 200;
     background: transparent;
-    color: var(--text);
+    color: var(--label);
     text-align: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
-    letter-spacing: -1px;
-    caret-color: var(--accent-light);
-    line-height: 1.1;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', sans-serif;
+    letter-spacing: -2px;
+    caret-color: var(--tint);
+    line-height: 1;
   }
-  .amount-hero input::placeholder { color: var(--text-muted); }
+  .amount-area input::placeholder { color: var(--placeholder); }
 
-  /* ─── Category Pills ─── */
-  .section-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    padding-left: 4px;
-  }
-  .category-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .cat-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 14px;
-    border-radius: 50px;
-    border: 1.5px solid var(--border);
-    background: var(--card);
-    cursor: pointer;
-    transition: all .25s cubic-bezier(.4,0,.2,1);
+  /* ── iOS-style Section ── */
+  .ios-section { margin-bottom: 20px; }
+  .ios-section-header {
     font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    box-shadow: var(--shadow-sm);
+    color: var(--label-secondary);
+    text-transform: none;
+    font-weight: 400;
+    margin: 0 20px 6px 4px;
+    letter-spacing: -.08px;
   }
-  .cat-pill:active { transform: scale(.95); }
-  .cat-pill.selected {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(74,57,44,.25);
+  .ios-section-footer {
+    font-size: 13px;
+    color: var(--label-quaternary);
+    margin: 6px 20px 0 4px;
+    letter-spacing: -.08px;
+    line-height: 1.4;
   }
-  .cat-pill .cp-icon { font-size: 16px; line-height: 1; }
-  .cat-pill.cat-manage {
-    border-style: dashed;
-    border-color: var(--text-muted);
-    color: var(--text-muted);
-    background: transparent;
-    box-shadow: none;
-  }
-  .cat-pill.cat-manage:active { border-color: var(--accent); color: var(--accent); }
 
-  /* ─── Form Row ─── */
-  .form-row {
-    display: flex;
+  /* ── iOS Category Grid ── */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-bottom: 16px;
   }
+  .cat-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 6px 12px;
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    cursor: pointer;
+    transition: all .15s ease;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--label-secondary);
+    letter-spacing: -.1px;
+  }
+  .cat-cell:active { transform: scale(.94); background: var(--fill-tertiary); }
+  .cat-cell.selected {
+    background: var(--tint);
+    color: #fff;
+    font-weight: 500;
+  }
+  .cat-cell.selected:active { background: #0066D6; }
+  .cat-cell .cat-cell-icon {
+    font-size: 28px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fill-quaternary);
+    border-radius: 50%;
+    transition: all .15s ease;
+  }
+  .cat-cell.selected .cat-cell-icon {
+    background: rgba(255,255,255,.25);
+  }
+  .cat-cell.manage-cell {
+    background: transparent;
+    border: 1.5px dashed var(--separator-opaque);
+    color: var(--label-quaternary);
+  }
+  .cat-cell.manage-cell:active { background: var(--fill-tertiary); border-color: transparent; }
+
+  /* ── iOS Form Row ── */
+  .form-row { display: flex; gap: 10px; margin-bottom: 16px; }
   .form-row > * { flex: 1; }
-  .input-field {
-    padding: 13px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
+  .ios-input {
+    padding: 11px 14px;
+    border: none;
+    border-radius: var(--radius);
     font-size: 15px;
     font-family: inherit;
-    background: var(--card);
-    color: var(--text);
+    background: var(--bg-elevated);
+    color: var(--label);
     outline: none;
-    transition: all .2s;
     -webkit-appearance: none;
-    box-shadow: var(--shadow-sm);
+    letter-spacing: -.1px;
+    box-shadow: 0 0 0 .5px rgba(0,0,0,.04);
   }
-  .input-field:focus {
-    border-color: var(--accent-light);
-    box-shadow: 0 0 0 3px rgba(139,115,85,.08);
-  }
-  .input-field.date-field {
-    text-align: center;
-    color-scheme: light;
-  }
-  input[type="month"].input-field { text-align: center; }
+  .ios-input:focus { box-shadow: 0 0 0 2px rgba(0,122,255,.3); }
+  .ios-input::placeholder { color: var(--placeholder); }
 
-  /* ─── Buttons ─── */
-  .btn {
-    padding: 14px 24px;
+  /* ── iOS Button ── */
+  .ios-btn {
+    padding: 13px 20px;
     border: none;
-    border-radius: var(--radius-md);
-    font-size: 16px;
+    border-radius: 50px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    transition: all .25s cubic-bezier(.4,0,.2,1);
+    transition: all .15s ease;
     font-family: inherit;
+    letter-spacing: -.2px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    letter-spacing: .3px;
   }
-  .btn:active { transform: scale(.97); }
-  .btn-primary {
-    background: var(--accent);
+  .ios-btn:active { opacity: .6; }
+  .ios-btn-primary {
+    background: var(--tint);
     color: #fff;
     width: 100%;
-    box-shadow: 0 4px 16px rgba(74,57,44,.2);
   }
-  .btn-primary:active { background: #3D2F23; }
-  .btn-sm {
-    padding: 8px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 50px;
-  }
-  .btn-pill {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    color: var(--text-secondary);
-    box-shadow: var(--shadow-sm);
-  }
-  .btn-pill.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: #F9F6F0;
-  }
-  .btn-pill:active { background: var(--bg); }
-  .btn-export {
-    background: linear-gradient(135deg, #2EBB7B, #1EA368);
-    color: #fff;
+  .ios-btn-sm {
+    padding: 7px 14px;
     font-size: 13px;
     border-radius: 50px;
-    padding: 10px 18px;
-    box-shadow: 0 4px 12px rgba(46,187,123,.25);
-    white-space: nowrap;
+    font-weight: 500;
+    background: var(--fill-tertiary);
+    color: var(--label-secondary);
     border: none;
     cursor: pointer;
-    font-weight: 600;
+    transition: all .15s ease;
     font-family: inherit;
-    transition: all .2s;
+    letter-spacing: -.1px;
   }
-  .btn-export:active { transform: scale(.96); opacity: .9; }
+  .ios-btn-sm:active { opacity: .6; }
+  .ios-btn-sm.active { background: var(--fill-quaternary); color: var(--label); font-weight: 600; }
 
-  /* ─── Filter Row ─── */
-  .filter-section {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
+  .ios-btn-tint {
+    background: var(--tint);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    letter-spacing: -.1px;
+    white-space: nowrap;
   }
-  .filter-section .spacer { flex: 1; }
+  .ios-btn-tint:active { opacity: .6; }
 
-  /* ─── Transaction Cards ─── */
-  .txn-list { display: flex; flex-direction: column; gap: 8px; }
-  .txn-card {
-    background: var(--card);
-    padding: 16px;
-    border-radius: var(--radius-md);
+  /* ── iOS Table View Cells ── */
+  .ios-list { margin: 0 -16px; }
+  .ios-cell {
     display: flex;
     align-items: center;
     gap: 14px;
-    box-shadow: var(--shadow-sm);
-    transition: all .2s;
-    border: 1px solid var(--border-light);
+    padding: 14px 16px;
+    background: var(--bg-elevated);
+    border-bottom: .5px solid var(--separator);
+    cursor: default;
+    transition: background .1s;
   }
-  .txn-card:active { transform: scale(.98); background: var(--card-hover); }
-  .txn-card .txn-icon-wrap {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+  .ios-cell:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+  .ios-cell:last-child { border-radius: 0 0 var(--radius) var(--radius); border-bottom: none; }
+  .ios-cell:only-child { border-radius: var(--radius); border-bottom: none; }
+  .ios-cell:active { background: var(--fill-tertiary); }
+  .ios-cell .cell-icon-wrap {
+    width: 40px; height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     flex-shrink: 0;
-    background: var(--bg);
   }
-  .txn-card.income-card .txn-icon-wrap { background: var(--income-bg); }
-  .txn-card.expense-card .txn-icon-wrap { background: var(--expense-bg); }
-  .txn-card .txn-info { flex: 1; min-width: 0; }
-  .txn-card .txn-title { font-size: 15px; font-weight: 600; }
-  .txn-card .txn-sub {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 3px;
-    display: flex;
-    gap: 8px;
-  }
-  .txn-card .txn-amount {
-    font-size: 18px;
-    font-weight: 700;
-    white-space: nowrap;
-    letter-spacing: -.3px;
-  }
-  .txn-card.income-card .txn-amount { color: var(--income); }
-  .txn-card.expense-card .txn-amount { color: var(--expense); }
-  .txn-del {
-    width: 30px;
-    height: 30px;
+  .ios-cell .cell-info { flex: 1; min-width: 0; }
+  .ios-cell .cell-title { font-size: 17px; font-weight: 400; letter-spacing: -.2px; }
+  .ios-cell .cell-subtitle { font-size: 13px; color: var(--label-quaternary); margin-top: 2px; letter-spacing: -.08px; }
+  .ios-cell .cell-value { font-size: 17px; font-weight: 400; text-align: right; white-space: nowrap; letter-spacing: -.2px; }
+  .ios-cell .cell-value.income { color: var(--income); }
+  .ios-cell .cell-value.expense { color: var(--expense); }
+
+  .ios-del-btn {
+    width: 28px; height: 28px;
     border-radius: 50%;
     border: none;
-    background: none;
-    color: var(--text-muted);
-    font-size: 15px;
+    background: rgba(255,59,48,.12);
+    color: var(--expense);
+    font-size: 14px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     flex-shrink: 0;
-    transition: all .2s;
+    transition: all .15s;
+    display: flex; align-items: center; justify-content: center;
   }
-  .txn-del:active { background: var(--expense-bg); color: var(--expense); }
+  .ios-del-btn:active { background: rgba(255,59,48,.25); }
 
-  /* ─── Empty State ─── */
+  /* ── Spacing helpers ── */
+  .inset-group {
+    margin: 16px 0;
+    background: var(--bg-elevated);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .ios-cell-group-header {
+    font-size: 13px;
+    color: var(--label-secondary);
+    padding: 0 20px 6px;
+    letter-spacing: -.08px;
+    font-weight: 400;
+  }
+
   .empty-state {
     text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
+    padding: 80px 20px;
+    color: var(--label-quaternary);
   }
-  .empty-state .empty-icon {
-    font-size: 56px;
-    margin-bottom: 16px;
-    opacity: .7;
-  }
-  .empty-state p { font-size: 14px; font-weight: 500; }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .6; }
+  .empty-state p { font-size: 15px; font-weight: 400; letter-spacing: -.1px; }
 
-  /* ─── Stats Cards ─── */
-  .summary-row {
+  /* ── Stats ── */
+  .stats-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
-  .summary-card {
-    background: var(--card);
+  .stat-card {
+    background: var(--bg-elevated);
     padding: 16px 12px;
-    border-radius: var(--radius-md);
-    text-align: center;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-light);
-  }
-  .summary-card .val {
-    font-size: 18px;
-    font-weight: 700;
-    margin-top: 6px;
-    letter-spacing: -.3px;
-  }
-  .summary-card .lbl { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
-  .summary-card.card-income .val { color: var(--income); }
-  .summary-card.card-expense .val { color: var(--expense); }
-  .summary-card.card-balance {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .summary-card.card-balance .lbl { color: rgba(255,255,255,.7); }
-  .summary-card.card-balance .val { color: #fff; }
-
-  /* ─── Chart Wrap ─── */
-  .chart-wrap {
-    background: var(--card);
     border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-    margin-bottom: 14px;
-    border: 1px solid var(--border-light);
+    text-align: center;
+    box-shadow: 0 0 0 .5px rgba(0,0,0,.04);
   }
-  .chart-wrap canvas { max-height: 220px; }
-  .chart-title {
-    font-size: 15px;
+  .stat-card .stat-val { font-size: 22px; font-weight: 600; margin-top: 6px; letter-spacing: -.3px; }
+  .stat-card .stat-lbl { font-size: 12px; color: var(--label-quaternary); font-weight: 400; letter-spacing: 0; }
+  .stat-card.stat-income .stat-val { color: var(--income); }
+  .stat-card.stat-expense .stat-val { color: var(--expense); }
+  .stat-card.stat-balance {
+    background: #1C1C1E;
+    box-shadow: none;
+  }
+  .stat-card.stat-balance .stat-lbl { color: rgba(255,255,255,.5); }
+  .stat-card.stat-balance .stat-val { color: #fff; }
+
+  .chart-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 0 0 .5px rgba(0,0,0,.04);
+  }
+  .chart-card canvas { max-height: 220px; }
+  .chart-card .chart-title {
+    font-size: 17px;
     font-weight: 600;
     margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     letter-spacing: -.2px;
-  }
-  .chart-title .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
+    color: var(--label);
   }
 
-  /* ─── Ranking ─── */
-  .rank-item {
+  /* ── Ranking ── */
+  .ios-rank-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 0;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: .5px solid var(--separator);
   }
-  .rank-item:last-child { border-bottom: none; }
-  .rank-pos {
+  .ios-rank-item:last-child { border-bottom: none; }
+  .rank-index {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--label-quaternary);
     width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-secondary);
+    text-align: center;
     flex-shrink: 0;
+    letter-spacing: -.1px;
   }
-  .rank-pos.top { background: var(--accent); color: #fff; }
-  .rank-info { flex: 1; min-width: 0; }
-  .rank-name { font-size: 14px; font-weight: 500; }
-  .rank-bar-bg {
-    height: 4px;
-    background: var(--bg);
-    border-radius: 2px;
+  .ios-rank-item .rank-info { flex: 1; min-width: 0; }
+  .ios-rank-item .rank-title { font-size: 15px; font-weight: 400; letter-spacing: -.1px; }
+  .ios-rank-item .rank-bar-track {
+    height: 3px;
+    background: var(--fill-tertiary);
+    border-radius: 1.5px;
     margin-top: 6px;
     overflow: hidden;
   }
-  .rank-bar { height: 100%; border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-  .rank-amount { font-size: 15px; font-weight: 600; white-space: nowrap; }
-  .rank-pct { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+  .ios-rank-item .rank-bar { height: 100%; border-radius: 1.5px; transition: width .6s ease; }
+  .ios-rank-item .rank-amount { font-size: 15px; font-weight: 500; white-space: nowrap; letter-spacing: -.1px; }
+  .ios-rank-item .rank-pct { font-size: 13px; color: var(--label-quaternary); margin-left: 2px; }
 
-  /* ─── Month Picker ─── */
-  .month-picker {
+  /* ── Month Nav ── */
+  .month-nav {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 0;
+    margin-bottom: 18px;
   }
-  .month-arrow {
-    width: 34px;
-    height: 34px;
+  .month-nav-arrow {
+    width: 36px; height: 36px;
     border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: var(--card);
+    border: none;
+    background: var(--bg-elevated);
     font-size: 16px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    box-shadow: var(--shadow-sm);
-    transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tint);
+    font-weight: 500;
+    transition: all .15s;
+    box-shadow: 0 0 0 .5px rgba(0,0,0,.04);
   }
-  .month-arrow:active { background: var(--bg); }
-  .month-label {
+  .month-nav-arrow:active { opacity: .5; }
+  .month-nav-label {
     flex: 1;
     text-align: center;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     letter-spacing: -.2px;
   }
 
-  /* ─── Modal ─── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.35);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+  /* ── Sheet Modal ── */
+  .sheet-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.3);
     z-index: 200;
     display: none;
     align-items: flex-end;
     justify-content: center;
-    animation: fadeIn .25s ease;
+    animation: fadeIn .2s ease;
   }
-  .modal-overlay.show { display: flex; }
+  .sheet-overlay.show { display: flex; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal {
-    background: var(--card);
+  .sheet {
+    background: var(--bg-elevated);
     border-radius: 24px 24px 0 0;
-    width: 100%;
-    max-width: 500px;
-    max-height: 72vh;
+    width: 100%; max-width: 500px;
+    max-height: 75vh;
     overflow-y: auto;
-    padding: 28px 24px 34px;
-    animation: slideUp .35s cubic-bezier(.32,.72,0,1);
+    padding: 0 0 30px;
+    animation: slideUp .4s cubic-bezier(.32,.72,0,1);
   }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; text-align: center; letter-spacing: -.2px; }
-  .modal-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 0 auto 18px;
+  .sheet-drag-indicator {
+    width: 36px; height: 5px;
+    background: var(--separator-opaque);
+    border-radius: 3px;
+    margin: 10px auto 0;
   }
+  .sheet-header {
+    font-size: 17px; font-weight: 600;
+    text-align: center;
+    padding: 12px 20px; letter-spacing: -.2px;
+  }
+  .sheet-body { padding: 0 20px; }
 
-  .color-options { display: flex; gap: 10px; flex-wrap: wrap; }
-  .color-dot {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: all .2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  /* ── Tab Bar ── */
+  .tab-bar-container {
+    position: fixed;
+    bottom: calc(20px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: calc(100% - 40px);
+    max-width: 380px;
   }
-  .color-dot.selected { border-color: var(--accent); transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-  .cat-list-item {
+  .tab-bar {
     display: flex;
+    background: rgba(246,246,250,.82);
+    backdrop-filter: saturate(180%) blur(28px);
+    -webkit-backdrop-filter: saturate(180%) blur(28px);
+    border-radius: 50px;
+    padding: 6px;
+    box-shadow: 0 1px 0 .5px rgba(0,0,0,.06), 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 9px 0 7px;
+    border: none;
+    background: none;
+    color: var(--label-quaternary);
+    font-size: 10px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--bg);
-    border-radius: var(--radius-md);
-    margin-bottom: 8px;
+    gap: 2px;
+    cursor: pointer;
+    transition: all .2s ease;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50px;
+    font-family: inherit;
+    letter-spacing: 0;
+  }
+  .tab-btn.active {
+    color: var(--label);
+    font-weight: 600;
+  }
+  .tab-btn.active::before {
+    content: '';
+    position: absolute;
+    inset: 3px 6px;
+    background: var(--bg-elevated);
+    border-radius: 50px;
+    z-index: -1;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .tab-btn { position: relative; z-index: 1; }
+  .tab-btn svg { width: 24px; height: 24px; }
+
+  /* ── Toast (iOS style) ── */
+  .ios-toast {
+    position: fixed;
+    top: calc(52px + var(--safe-top));
+    left: 50%;
+    transform: translateX(-50%) translateY(-16px);
+    background: rgba(28,28,30,.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 50px;
     font-size: 14px;
     font-weight: 500;
-  }
-  .cat-list-item .del-cat {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 50px;
-    color: var(--text-muted);
-    transition: all .2s;
-  }
-  .cat-list-item .del-cat:active { background: var(--expense-bg); color: var(--expense); }
-
-  /* ─── Toast ─── */
-  .toast {
-    position: fixed;
-    top: calc(60px + var(--safe-top));
-    left: 50%;
-    transform: translateX(-50%) translateY(-20px);
-    background: var(--accent);
-    color: #fff;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
     z-index: 300;
     opacity: 0;
-    transition: all .3s cubic-bezier(.4,0,.2,1);
+    transition: all .35s cubic-bezier(.32,.72,0,1);
     pointer-events: none;
-    box-shadow: 0 8px 24px rgba(74,57,44,.3);
+    letter-spacing: -.1px;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .ios-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── Desktop ─── */
+  /* ── Desktop ── */
   @media (min-width: 500px) {
     body {
-      max-width: 420px;
+      max-width: 430px;
       margin: 0 auto;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      box-shadow: 0 0 60px rgba(0,0,0,.08);
+      box-shadow: 0 0 80px rgba(0,0,0,.15);
     }
+    .tab-bar-container { max-width: 390px; }
   }
 </style>
 </head>
 <body>
 
-<div class="app-header">
-  <span class="logo">记账本</span>
-  <span class="today" id="todayLabel"></span>
+<div class="nav-bar">
+  <span class="nav-title" id="navTitle">记账</span>
+  <span class="nav-subtitle" id="navDate"></span>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="ios-toast" id="toast"></div>
 
-<!-- ═══════════ TAB 1: 记账 ═══════════ -->
+<!-- ═══════ TAB: 记账 ═══════ -->
 <div class="tab-content active" id="tab-record">
-  <div class="type-segment" id="typeToggle">
-    <button class="type-expense active" data-type="expense" onclick="setType('expense')">支出</button>
-    <button class="type-income" data-type="income" onclick="setType('income')">收入</button>
+  <div class="segmented-control" id="typeToggle">
+    <button class="expense-btn active" onclick="setType('expense')">支出</button>
+    <button class="income-btn" onclick="setType('income')">收入</button>
   </div>
 
-  <div class="amount-hero">
-    <div class="amount-label" id="amountHint">支出了多少钱？</div>
-    <div class="amount-display">
+  <div class="amount-area">
+    <div class="hint" id="amountHint">花了多少钱？</div>
+    <div class="amount-row">
       <span class="currency">¥</span>
-      <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0.01" inputmode="decimal" autofocus>
+      <input type="number" id="amountInput" placeholder="0" step="0.01" min="0.01" inputmode="decimal" autofocus>
     </div>
   </div>
 
-  <div class="section-label">选择分类</div>
-  <div class="category-pills" id="categoryGrid"></div>
+  <div class="ios-section">
+    <div class="ios-section-header">分类</div>
+    <div class="cat-grid" id="categoryGrid"></div>
+  </div>
 
   <div class="form-row">
-    <input type="date" id="dateInput" class="input-field date-field">
-    <input type="text" id="noteInput" class="input-field" placeholder="备注（选填）" maxlength="50">
+    <input type="date" id="dateInput" class="ios-input" style="text-align:center;">
+    <input type="text" id="noteInput" class="ios-input" placeholder="备注（选填）" maxlength="50">
   </div>
 
-  <button class="btn btn-primary" onclick="addTransaction()">记一笔</button>
+  <button class="ios-btn ios-btn-primary" onclick="addTransaction()">记录</button>
+  <div class="ios-section-footer" style="margin-top:8px;">数据安全地储存在您的设备上。</div>
 </div>
 
-<!-- ═══════════ TAB 2: 明细 ═══════════ -->
+<!-- ═══════ TAB: 明细 ═══════ -->
 <div class="tab-content" id="tab-detail">
-  <div class="filter-section">
-    <input type="month" id="monthFilter" class="input-field" style="flex:0;width:auto;" onchange="renderDetail()">
-    <button class="btn-sm btn-pill active filter-type" data-type="all" onclick="setFilterType('all', this)">全部</button>
-    <button class="btn-sm btn-pill filter-type" data-type="expense" onclick="setFilterType('expense', this)">支出</button>
-    <button class="btn-sm btn-pill filter-type" data-type="income" onclick="setFilterType('income', this)">收入</button>
-    <span class="spacer"></span>
-    <button class="btn-export" onclick="exportExcel()">导出 Excel</button>
+  <div class="ios-section" style="margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <input type="month" id="monthFilter" class="ios-input" style="width:auto;flex-shrink:0;" onchange="renderDetail()">
+      <button class="ios-btn-sm active filter-chip" data-type="all" onclick="setFilterType('all', this)">全部</button>
+      <button class="ios-btn-sm filter-chip" data-type="expense" onclick="setFilterType('expense', this)">支出</button>
+      <button class="ios-btn-sm filter-chip" data-type="income" onclick="setFilterType('income', this)">收入</button>
+      <span style="flex:1;"></span>
+      <button class="ios-btn-tint" onclick="exportExcel()">导出</button>
+    </div>
   </div>
 
-  <div class="txn-list" id="txnList"></div>
+  <div id="txnList"></div>
   <div class="empty-state" id="emptyDetail">
-    <div class="empty-icon">📝</div>
-    <p>还没有记录</p>
+    <div class="empty-icon">📋</div>
+    <p>暂无记录</p>
   </div>
 </div>
 
-<!-- ═══════════ TAB 3: 统计 ═══════════ -->
+<!-- ═══════ TAB: 统计 ═══════ -->
 <div class="tab-content" id="tab-stats">
-  <div class="month-picker">
-    <button class="month-arrow" onclick="shiftMonth(-1)">◀</button>
-    <span class="month-label" id="statsMonthLabel">2026年5月</span>
-    <button class="month-arrow" onclick="shiftMonth(1)">▶</button>
+  <div class="month-nav">
+    <button class="month-nav-arrow" onclick="shiftMonth(-1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="month-nav-label" id="statsMonthLabel"></span>
+    <button class="month-nav-arrow" onclick="shiftMonth(1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     <input type="hidden" id="statsMonth">
   </div>
 
-  <div class="summary-row">
-    <div class="summary-card card-income"><div class="lbl">收入</div><div class="val" id="sumIncome">¥0</div></div>
-    <div class="summary-card card-expense"><div class="lbl">支出</div><div class="val" id="sumExpense">¥0</div></div>
-    <div class="summary-card card-balance"><div class="lbl">结余</div><div class="val" id="sumBalance">¥0</div></div>
+  <div class="stats-summary">
+    <div class="stat-card stat-income"><div class="stat-lbl">收入</div><div class="stat-val" id="sumIncome">¥0</div></div>
+    <div class="stat-card stat-expense"><div class="stat-lbl">支出</div><div class="stat-val" id="sumExpense">¥0</div></div>
+    <div class="stat-card stat-balance"><div class="stat-lbl">结余</div><div class="stat-val" id="sumBalance">¥0</div></div>
   </div>
 
-  <div class="chart-wrap">
-    <div class="chart-title"><span class="dot" style="background:var(--expense)"></span>支出分类占比</div>
+  <div class="chart-card">
+    <div class="chart-title">支出分类</div>
     <canvas id="pieChart"></canvas>
   </div>
 
-  <div class="chart-wrap">
-    <div class="chart-title"><span class="dot" style="background:var(--accent-light)"></span>近6月趋势</div>
+  <div class="chart-card">
+    <div class="chart-title">近六月趋势</div>
     <canvas id="trendChart"></canvas>
   </div>
 
-  <div class="chart-wrap" id="rankCard" style="display:none;">
-    <div class="chart-title">支出排行</div>
+  <div class="chart-card" id="rankCard" style="display:none;">
+    <div class="chart-title">排行</div>
     <div id="rankList"></div>
   </div>
 </div>
 
-<!-- ═══════════ Floating Tab Bar ═══════════ -->
-<div class="tab-bar-wrap">
+<!-- ═══════ Floating Tab Bar ═══════ -->
+<div class="tab-bar-container">
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('record', event)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -760,84 +730,87 @@
   </div>
 </div>
 
-<!-- ═══════════ Category Modal ═══════════ -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalContent"></div>
+<!-- ═══════ Sheet Modal ═══════ -->
+<div class="sheet-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="modalContent"></div>
 </div>
 
 <script>
 // ==================== DATA LAYER ====================
 const DEFAULT_CATS = [
-  { id: 'c1',  name: '餐饮',   type: 'expense', icon: '🍜', color: '#F56165' },
-  { id: 'c2',  name: '交通',   type: 'expense', icon: '🚕', color: '#F59E0B' },
-  { id: 'c3',  name: '购物',   type: 'expense', icon: '🛒', color: '#8B5CF6' },
-  { id: 'c4',  name: '娱乐',   type: 'expense', icon: '🎬', color: '#EC4899' },
-  { id: 'c5',  name: '居家',   type: 'expense', icon: '🏠', color: '#78716C' },
-  { id: 'c6',  name: '日用',   type: 'expense', icon: '🧻', color: '#14B8A6' },
-  { id: 'c7',  name: '数码',   type: 'expense', icon: '📱', color: '#3B82F6' },
-  { id: 'c8',  name: '医疗',   type: 'expense', icon: '💊', color: '#F97316' },
-  { id: 'c9',  name: '学习',   type: 'expense', icon: '📖', color: '#6366F1' },
-  { id: 'c10', name: '其他',   type: 'expense', icon: '💸', color: '#9CA3AF' },
-  { id: 'c11', name: '工资',   type: 'income', icon: '💼', color: '#2EBB7B' },
-  { id: 'c12', name: '兼职',   type: 'income', icon: '💻', color: '#34D399' },
-  { id: 'c13', name: '理财',   type: 'income', icon: '📈', color: '#059669' },
-  { id: 'c14', name: '红包',   type: 'income', icon: '🧧', color: '#DC2626' },
-  { id: 'c15', name: '其他',   type: 'income', icon: '💰', color: '#6EE7B7' },
+  { id: 'c1',  name: '餐饮', type: 'expense', icon: '🍜', color: '#FF3B30' },
+  { id: 'c2',  name: '交通', type: 'expense', icon: '🚕', color: '#FF9500' },
+  { id: 'c3',  name: '购物', type: 'expense', icon: '🛍', color: '#AF52DE' },
+  { id: 'c4',  name: '娱乐', type: 'expense', icon: '🎮', color: '#FF2D55' },
+  { id: 'c5',  name: '居家', type: 'expense', icon: '🏠', color: '#8E8E93' },
+  { id: 'c6',  name: '日用', type: 'expense', icon: '🛒', color: '#00C7BE' },
+  { id: 'c7',  name: '数码', type: 'expense', icon: '📱', color: '#007AFF' },
+  { id: 'c8',  name: '医疗', type: 'expense', icon: '💊', color: '#FF9500' },
+  { id: 'c9',  name: '学习', type: 'expense', icon: '📖', color: '#5856D6' },
+  { id: 'c10', name: '其他', type: 'expense', icon: '⋯', color: '#8E8E93' },
+  { id: 'c11', name: '工资', type: 'income', icon: '💼', color: '#34C759' },
+  { id: 'c12', name: '兼职', type: 'income', icon: '💻', color: '#30B0C7' },
+  { id: 'c13', name: '理财', type: 'income', icon: '📈', color: '#007AFF' },
+  { id: 'c14', name: '红包', type: 'income', icon: '🧧', color: '#FF3B30' },
+  { id: 'c15', name: '其他', type: 'income', icon: '💰', color: '#34C759' },
 ];
 
 function loadData() {
   const raw = localStorage.getItem('bk_data');
-  if (raw) return JSON.parse(raw);
-  return { transactions: [], categories: [...DEFAULT_CATS] };
+  return raw ? JSON.parse(raw) : { transactions: [], categories: [...DEFAULT_CATS] };
 }
-function saveData(data) { localStorage.setItem('bk_data', JSON.stringify(data)); }
+function saveData(d) { localStorage.setItem('bk_data', JSON.stringify(d)); }
 
 let appData = loadData();
 let currentType = 'expense';
 let selectedCatId = null;
 let filterType = 'all';
+let statsYear, statsMonthNum;
 
 function getCats(type) { return appData.categories.filter(c => c.type === type); }
 
 // ==================== HELPERS ====================
-function $(id) { return document.getElementById(id); }
-function fmt(n) { return (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+const $ = id => document.getElementById(id);
+const fmt = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 function showToast(msg) {
   const t = $('toast');
   t.textContent = msg;
   t.classList.add('show');
-  clearTimeout(t._timeout);
-  t._timeout = setTimeout(() => t.classList.remove('show'), 1800);
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// ==================== HEADER DATE ====================
-function updateToday() {
-  const now = new Date();
-  $('todayLabel').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-}
-updateToday();
+// ==================== HEADER ====================
+(function updateHeader() {
+  const n = new Date();
+  $('navDate').textContent = `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 周${'日一二三四五六'[n.getDay()]}`;
+})();
 
-// ==================== TAB SWITCHING ====================
+// ==================== TAB SWITCH ====================
 function switchTab(tab, e) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   $('tab-' + tab).classList.add('active');
   const btn = (e && e.target) ? e.target.closest('.tab-btn') : document.querySelector(`.tab-btn[onclick*="${tab}"]`);
   if (btn) btn.classList.add('active');
-  if (tab === 'record') { renderCategories(); $('amountInput').focus(); }
+
+  const titles = { record: '记账', detail: '明细', stats: '统计' };
+  $('navTitle').textContent = titles[tab];
+
+  if (tab === 'record') { renderCategories(); setTimeout(() => $('amountInput').focus(), 300); }
   if (tab === 'detail') { initMonthFilter(); renderDetail(); }
   if (tab === 'stats') { initStatsMonth(); renderStats(); }
 }
 
 // ==================== AMOUNT INPUT ====================
 $('amountInput').addEventListener('input', function() {
-  let val = this.value.replace(/[^\d.]/g, '');
-  const parts = val.split('.');
-  if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
-  if (parts.length === 2 && parts[1].length > 2) val = parts[0] + '.' + parts[1].slice(0, 2);
-  this.value = val;
+  let v = this.value.replace(/[^\d.]/g, '');
+  const parts = v.split('.');
+  if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+  if (parts.length === 2 && parts[1].length > 2) v = parts[0] + '.' + parts[1].slice(0, 2);
+  this.value = v;
 });
 
 // ==================== TYPE & CATEGORIES ====================
@@ -845,8 +818,8 @@ function setType(type) {
   currentType = type;
   selectedCatId = null;
   document.querySelectorAll('#typeToggle button').forEach(b => b.classList.remove('active'));
-  document.querySelector(`#typeToggle .type-${type}`).classList.add('active');
-  $('amountHint').textContent = type === 'expense' ? '支出了多少钱？' : '收入了多少钱？';
+  document.querySelector(`#typeToggle .${type}-btn`).classList.add('active');
+  $('amountHint').textContent = type === 'expense' ? '花了多少钱？' : '收入多少钱？';
   renderCategories();
 }
 
@@ -854,11 +827,15 @@ function renderCategories() {
   const grid = $('categoryGrid');
   const cats = getCats(currentType);
   grid.innerHTML = cats.map(c => `
-    <div class="cat-pill${c.id === selectedCatId ? ' selected' : ''}" onclick="selectCat('${c.id}')">
-      <span class="cp-icon">${c.icon}</span>${c.name}
+    <div class="cat-cell${c.id === selectedCatId ? ' selected' : ''}" onclick="selectCat('${c.id}')">
+      <div class="cat-cell-icon">${c.icon}</div>
+      <span>${c.name}</span>
     </div>
   `).join('') + `
-    <div class="cat-pill cat-manage" onclick="openCatManage()">+ 管理</div>`;
+    <div class="cat-cell manage-cell" onclick="openCatManage()">
+      <div class="cat-cell-icon" style="background:transparent;font-size:22px;">⋯</div>
+      <span>管理</span>
+    </div>`;
 }
 
 function selectCat(id) { selectedCatId = id; renderCategories(); }
@@ -866,22 +843,21 @@ function selectCat(id) { selectedCatId = id; renderCategories(); }
 // ==================== ADD TRANSACTION ====================
 function addTransaction() {
   const amount = parseFloat($('amountInput').value);
-  if (!amount || amount <= 0) { shakeEl($('amountInput')); return; }
+  if (!amount || amount <= 0) { shake($('amountInput')); return; }
   if (!selectedCatId) {
-    const firstCat = getCats(currentType)[0];
-    if (firstCat) selectedCatId = firstCat.id;
-    else { alert('请先添加分类'); return; }
+    const fc = getCats(currentType)[0];
+    if (fc) selectedCatId = fc.id;
+    else { showToast('请先添加分类'); return; }
   }
-  const txn = {
+  appData.transactions.unshift({
     id: genId(),
     type: currentType,
-    amount: amount,
+    amount,
     categoryId: selectedCatId,
     date: $('dateInput').value || new Date().toISOString().slice(0, 10),
     note: $('noteInput').value.trim(),
     createdAt: Date.now()
-  };
-  appData.transactions.unshift(txn);
+  });
   saveData(appData);
   $('amountInput').value = '';
   $('noteInput').value = '';
@@ -890,24 +866,24 @@ function addTransaction() {
   showToast('已记录');
 }
 
-function shakeEl(el) {
+function shake(el) {
   el.style.animation = 'none';
-  el.offsetHeight;
-  el.style.animation = 'shake .4s ease';
+  void el.offsetHeight;
+  el.style.animation = 'shake .45s ease';
 }
-const shakeStyle = document.createElement('style');
-shakeStyle.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}`;
-document.head.appendChild(shakeStyle);
+const s = document.createElement('style');
+s.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}';
+document.head.appendChild(s);
 
-// ==================== DETAIL PAGE ====================
+// ==================== DETAIL ====================
 function initMonthFilter() {
-  const now = new Date();
-  $('monthFilter').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const n = new Date();
+  $('monthFilter').value = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
 }
 
 function setFilterType(type, btn) {
   filterType = type;
-  document.querySelectorAll('.filter-type').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderDetail();
 }
@@ -923,83 +899,88 @@ function getFilteredTxns() {
 
 function renderDetail() {
   const txns = getFilteredTxns();
-  const list = $('txnList');
   const empty = $('emptyDetail');
-  if (txns.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  if (txns.length === 0) { $('txnList').innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  list.innerHTML = txns.map(t => {
-    const cat = appData.categories.find(c => c.id === t.categoryId) || {};
-    const cardClass = t.type === 'income' ? 'income-card' : 'expense-card';
-    const sign = t.type === 'income' ? '+' : '-';
-    return `
-    <div class="txn-card ${cardClass}">
-      <div class="txn-icon-wrap">${cat.icon || '📌'}</div>
-      <div class="txn-info">
-        <div class="txn-title">${cat.name || '未分类'}</div>
-        <div class="txn-sub">
-          <span>${t.date}</span>
-          ${t.note ? `<span>· ${escHtml(t.note)}</span>` : ''}
+
+  // Group by date
+  const groups = {};
+  txns.forEach(t => {
+    if (!groups[t.date]) groups[t.date] = [];
+    groups[t.date].push(t);
+  });
+
+  let html = '';
+  for (const [date, items] of Object.entries(groups)) {
+    const total = items.reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
+    const label = total >= 0 ? `+¥${fmt(total)}` : `-¥${fmt(Math.abs(total))}`;
+    const labelClass = total >= 0 ? 'income' : 'expense';
+    html += `<div class="ios-cell-group-header" style="margin-top:12px;">${date}  ·  <span class="${labelClass}" style="font-size:13px;">${label}</span></div>`;
+    html += '<div class="inset-group">';
+    items.forEach(t => {
+      const cat = appData.categories.find(c => c.id === t.categoryId) || {};
+      const sign = t.type === 'income' ? '+' : '-';
+      html += `
+      <div class="ios-cell">
+        <div class="cell-icon-wrap" style="background:${cat.color||'#E5E5EA'}22;color:${cat.color||'#8E8E93'};">${cat.icon || '⋯'}</div>
+        <div class="cell-info">
+          <div class="cell-title">${cat.name || '未分类'}</div>
+          <div class="cell-subtitle">${t.note ? escHtml(t.note) : t.type==='income'?'收入':'支出'}</div>
         </div>
-      </div>
-      <div class="txn-amount">${sign}¥${fmt(t.amount)}</div>
-      <button class="txn-del" onclick="delTxn('${t.id}')">×</button>
-    </div>`;
-  }).join('');
+        <div class="cell-value ${t.type}">${sign}¥${fmt(t.amount)}</div>
+        <button class="ios-del-btn" onclick="delTxn('${t.id}')">✕</button>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  $('txnList').innerHTML = html;
 }
 
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 function delTxn(id) {
-  if (!confirm('确定删除这条记录吗？')) return;
+  if (!confirm('删除这条记录？')) return;
   appData.transactions = appData.transactions.filter(t => t.id !== id);
   saveData(appData);
   renderDetail();
 }
 
-// ==================== EXCEL EXPORT ====================
+// ==================== EXPORT ====================
 function exportExcel() {
   const txns = getFilteredTxns();
-  if (txns.length === 0) { alert('本月暂无记录，无法导出'); return; }
+  if (!txns.length) { showToast('本月暂无记录'); return; }
   const month = $('monthFilter').value || new Date().toISOString().slice(0,7);
   const rows = [['日期', '类型', '分类', '金额', '备注']];
-  let totalIncome = 0, totalExpense = 0;
+  let inc = 0, exp = 0;
   txns.forEach(t => {
     const cat = appData.categories.find(c => c.id === t.categoryId);
     rows.push([t.date, t.type==='income'?'收入':'支出', cat?cat.name:'未分类', t.amount, t.note||'']);
-    if (t.type === 'income') totalIncome += t.amount;
-    else totalExpense += t.amount;
+    t.type === 'income' ? inc += t.amount : exp += t.amount;
   });
-  rows.push([]);
-  rows.push(['', '', '收入合计', totalIncome, '']);
-  rows.push(['', '', '支出合计', totalExpense, '']);
-  rows.push(['', '', '净收支', totalIncome - totalExpense, '']);
+  rows.push([], ['', '', '收入合计', inc, ''], ['', '', '支出合计', exp, ''], ['', '', '结余', inc - exp, '']);
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:12},{wch:8},{wch:12},{wch:12},{wch:20}];
-  const lastRow = rows.length;
-  for (let r = lastRow - 2; r < lastRow; r++)
+  ws['!cols'] = [{wch:12},{wch:8},{wch:12},{wch:12},{wch:22}];
+  for (let r = rows.length-2; r < rows.length; r++)
     for (let c = 0; c < 5; c++) {
       const cell = XLSX.utils.encode_cell({r, c});
       if (ws[cell]) ws[cell].s = { font: { bold: true } };
     }
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, '账单');
-  XLSX.writeFile(wb, `${month.replace('-','年')}月账单.xlsx`);
+  XLSX.writeFile(XLSX.utils.book_new(XLSX.utils.book_append_sheet({Sheets:{}}, ws, '账单'), {Sheets:{}}), `${month.replace('-','年')}月账单.xlsx`);
 }
 
-// ==================== STATS PAGE ====================
-let statsYear, statsMonthNum;
+// ==================== STATS ====================
 function initStatsMonth() {
-  const now = new Date();
-  statsYear = now.getFullYear();
-  statsMonthNum = now.getMonth() + 1;
+  const n = new Date();
+  statsYear = n.getFullYear();
+  statsMonthNum = n.getMonth() + 1;
   syncStatsMonth();
 }
 function syncStatsMonth() {
   $('statsMonth').value = `${statsYear}-${String(statsMonthNum).padStart(2,'0')}`;
   $('statsMonthLabel').textContent = `${statsYear}年${statsMonthNum}月`;
 }
-function shiftMonth(delta) {
-  statsMonthNum += delta;
+function shiftMonth(d) {
+  statsMonthNum += d;
   if (statsMonthNum > 12) { statsMonthNum = 1; statsYear++; }
   if (statsMonthNum < 1) { statsMonthNum = 12; statsYear--; }
   syncStatsMonth();
@@ -1015,65 +996,65 @@ function renderStats() {
   const expense = txns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   $('sumIncome').textContent = `¥${fmt(income)}`;
   $('sumExpense').textContent = `¥${fmt(expense)}`;
-  $('sumBalance').textContent = `¥${fmt(income - expense)}`;
+  $('sumBalance').textContent = `${income - expense >= 0 ? '+' : ''}¥${fmt(income - expense)}`;
 
-  // Pie chart
-  const expenseTxns = txns.filter(t => t.type === 'expense');
+  // Pie
   const catMap = {};
-  expenseTxns.forEach(t => {
+  txns.filter(t => t.type === 'expense').forEach(t => {
     const cat = appData.categories.find(c => c.id === t.categoryId);
     const name = cat ? cat.name : '未分类';
-    const color = cat ? cat.color : '#9CA3AF';
+    const color = cat ? cat.color : '#8E8E93';
     if (!catMap[name]) catMap[name] = { amount: 0, color };
     catMap[name].amount += t.amount;
   });
-  const pieLabels = Object.keys(catMap);
-  const pieData = pieLabels.map(k => catMap[k].amount);
-  const pieColors = pieLabels.map(k => catMap[k].color);
-
-  const pieCtx = $('pieChart').getContext('2d');
+  const labels = Object.keys(catMap);
+  const data = labels.map(k => catMap[k].amount);
+  const colors = labels.map(k => catMap[k].color);
+  const ctx = $('pieChart').getContext('2d');
   if (pieChartInst) pieChartInst.destroy();
-  if (pieLabels.length > 0) {
-    pieChartInst = new Chart(pieCtx, {
-      type: 'doughnut',
-      data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: pieColors, borderWidth: 3, borderColor: '#fff', hoverBorderWidth: 4 }] },
-      options: {
-        responsive: true, maintainAspectRatio: true, cutout: '62%',
-        plugins: {
-          legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyleWidth: 10, font: { size: 12, family: "-apple-system, PingFang SC, sans-serif" }, color: '#8B8680' } }
+  pieChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels.length ? labels : ['暂无'],
+      datasets: [{
+        data: labels.length ? data : [1],
+        backgroundColor: labels.length ? colors : ['#E5E5EA'],
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverBorderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true, cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 20, usePointStyle: true, pointStyleWidth: 8, font: { size: 12, family: "-apple-system, PingFang SC, sans-serif" }, color: '#8E8E93' }
         }
       }
-    });
-  } else {
-    pieChartInst = new Chart(pieCtx, {
-      type: 'doughnut',
-      data: { labels: ['暂无支出'], datasets: [{ data: [1], backgroundColor: ['#EBE7E0'], borderWidth: 0 }] },
-      options: { responsive: true, cutout: '62%', plugins: { legend: { display: false } } }
-    });
-  }
+    }
+  });
 
   // Ranking
   const sorted = Object.entries(catMap).sort((a, b) => b[1].amount - a[1].amount);
-  const maxAmt = sorted.length > 0 ? sorted[0][1].amount : 1;
-  if (sorted.length > 0) {
+  const maxAmt = sorted[0] ? sorted[0][1].amount : 1;
+  if (sorted.length) {
     $('rankCard').style.display = '';
-    $('rankList').innerHTML = sorted.map(([name, data], i) => `
-      <div class="rank-item">
-        <div class="rank-pos ${i<3?'top':''}">${i+1}</div>
+    $('rankList').innerHTML = sorted.map(([name, d], i) => `
+      <div class="ios-rank-item">
+        <span class="rank-index">${i+1}</span>
         <div class="rank-info">
-          <div class="rank-name">${name}</div>
-          <div class="rank-bar-bg"><div class="rank-bar" style="width:${(data.amount/maxAmt*100).toFixed(0)}%;background:${data.color}"></div></div>
+          <div class="rank-title">${name}</div>
+          <div class="rank-bar-track"><div class="rank-bar" style="width:${(d.amount/maxAmt*100)|0}%;background:${d.color}"></div></div>
         </div>
-        <span class="rank-amount">¥${fmt(data.amount)}</span>
-        <span class="rank-pct">${expense>0?(data.amount/expense*100).toFixed(1):0}%</span>
+        <span class="rank-amount">¥${fmt(d.amount)}</span>
+        <span class="rank-pct">${expense?(d.amount/expense*100).toFixed(1):0}%</span>
       </div>
     `).join('');
-  } else {
-    $('rankCard').style.display = 'none';
-  }
+  } else { $('rankCard').style.display = 'none'; }
 
-  // Trend chart
-  const trendCtx = $('trendChart').getContext('2d');
+  // Trend
+  const tctx = $('trendChart').getContext('2d');
   if (trendChartInst) trendChartInst.destroy();
   const months = [];
   const now = new Date();
@@ -1081,63 +1062,63 @@ function renderStats() {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
   }
-  const trendIncome = months.map(m => appData.transactions.filter(t => t.type==='income' && t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
-  const trendExpense = months.map(m => appData.transactions.filter(t => t.type==='expense' && t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
-  const trendLabels = months.map(m => m.slice(2).replace('-','月'));
-  trendChartInst = new Chart(trendCtx, {
+  const tInc = months.map(m => appData.transactions.filter(t => t.type==='income' && t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+  const tExp = months.map(m => appData.transactions.filter(t => t.type==='expense' && t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+  trendChartInst = new Chart(tctx, {
     type: 'bar',
     data: {
-      labels: trendLabels,
+      labels: months.map(m => m.slice(5).replace(/^0/,'')+'月'),
       datasets: [
-        { label: '收入', data: trendIncome, backgroundColor: 'rgba(46,187,123,.7)', borderRadius: 8, borderSkipped: false },
-        { label: '支出', data: trendExpense, backgroundColor: 'rgba(245,97,101,.5)', borderRadius: 8, borderSkipped: false }
+        { label: '收入', data: tInc, backgroundColor: '#34C759', borderRadius: 6, borderSkipped: false },
+        { label: '支出', data: tExp, backgroundColor: '#FF3B30', borderRadius: 6, borderSkipped: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 24, font: { size: 12 }, color: '#8B8680' } } },
+      plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 24, font: { size: 12 }, color: '#8E8E93' } } },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: v => '¥'+v, font: { size: 11 }, color: '#BFBBB4' }, grid: { color: '#F2EFEA' } },
-        x: { ticks: { font: { size: 11 }, color: '#BFBBB4' }, grid: { display: false } }
+        y: { beginAtZero: true, ticks: { callback: v => '¥'+v, font: { size: 11 }, color: '#8E8E93' }, grid: { color: '#F2F2F7' } },
+        x: { ticks: { font: { size: 11 }, color: '#8E8E93' }, grid: { display: false } }
       }
     }
   });
 }
 
-// ==================== CATEGORY MANAGEMENT ====================
+// ==================== CATEGORY SHEET ====================
 function openCatManage() {
-  const modal = $('modalContent');
-  modal.innerHTML = `
-    <div class="modal-handle"></div>
-    <h3>管理分类</h3>
-    <div style="margin-bottom:16px;">
+  $('modalContent').innerHTML = `
+    <div class="sheet-drag-indicator"></div>
+    <div class="sheet-header">管理分类</div>
+    <div class="sheet-body">
       <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <button class="btn-sm btn-pill active cat-mgr-tab" data-cmtype="expense" onclick="switchCatMgrTab('expense')">支出分类</button>
-        <button class="btn-sm btn-pill cat-mgr-tab" data-cmtype="income" onclick="switchCatMgrTab('income')">收入分类</button>
+        <button class="ios-btn-sm active cat-mgr-tab" data-cmtype="expense" onclick="switchCatMgrTab('expense')">支出</button>
+        <button class="ios-btn-sm cat-mgr-tab" data-cmtype="income" onclick="switchCatMgrTab('income')">收入</button>
       </div>
-      <div id="catMgrList"></div>
-    </div>
-    <div style="border-top:1px solid var(--border-light);padding-top:18px;">
-      <div class="section-label" style="margin-bottom:10px;">添加新分类</div>
-      <div class="form-row">
-        <input type="text" id="newCatName" class="input-field" placeholder="分类名称" maxlength="6">
-        <input type="text" id="newCatIcon" class="input-field" placeholder="图标" maxlength="4" style="flex:0 0 68px;">
-      </div>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
-        <span style="font-size:12px;color:var(--text-secondary);">颜色</span>
-        <div class="color-options" id="colorOptions">
-          ${['#F56165','#F59E0B','#2EBB7B','#3B82F6','#8B5CF6','#EC4899','#14B8A6','#F97316','#78716C','#4A392C'].map(c =>
-            `<div class="color-dot" style="background:${c}" data-color="${c}" onclick="selectColor('${c}',this)"></div>`
-          ).join('')}
+      <div id="catMgrList" style="margin-bottom:16px;"></div>
+      <div style="border-top:.5px solid var(--separator);padding-top:16px;">
+        <div class="ios-section-header" style="margin:0 0 8px;">添加新分类</div>
+        <div class="form-row">
+          <input type="text" id="newCatName" class="ios-input" placeholder="名称" maxlength="6">
+          <input type="text" id="newCatIcon" class="ios-input" placeholder="图标" maxlength="4" style="flex:0 0 64px;">
         </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:var(--label-secondary);">颜色</span>
+          <div class="color-options" id="colorOptions" style="display:flex;gap:8px;">
+            ${['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55'].map(c => `
+              <div class="color-dot" style="background:${c};width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;" data-color="${c}" onclick="selectColor('${c}',this)"></div>
+            `).join('')}
+          </div>
+        </div>
+        <input type="hidden" id="newCatColor" value="#FF3B30">
+        <button class="ios-btn ios-btn-primary" onclick="addCategory()">添加</button>
       </div>
-      <input type="hidden" id="newCatColor" value="#F56165">
-      <button class="btn btn-primary" onclick="addCategory()">添加分类</button>
+      <button class="ios-btn" onclick="closeModal()" style="width:100%;margin-top:10px;background:var(--fill-tertiary);border-radius:50px;font-size:17px;font-weight:500;">关闭</button>
     </div>
-    <button class="btn btn-pill" onclick="closeModal()" style="width:100%;margin-top:10px;">关闭</button>
   `;
-  // init first color as selected
-  setTimeout(() => { const first = document.querySelector('#colorOptions .color-dot'); if (first) { first.classList.add('selected'); $('newCatColor').value = first.dataset.color; } }, 50);
+  setTimeout(() => {
+    const first = document.querySelector('#colorOptions .color-dot');
+    if (first) { first.style.borderColor = '#000'; first.style.transform = 'scale(1.1)'; $('newCatColor').value = first.dataset.color; }
+  }, 60);
   $('modalOverlay').classList.add('show');
   switchCatMgrTab(currentType);
 }
@@ -1147,27 +1128,27 @@ function switchCatMgrTab(type) {
   document.querySelector(`.cat-mgr-tab[data-cmtype="${type}"]`).classList.add('active');
   const cats = getCats(type);
   $('catMgrList').innerHTML = cats.map(c => `
-    <div class="cat-list-item">
-      <span>${c.icon} ${c.name}</span>
-      <button class="del-cat" onclick="deleteCategory('${c.id}')">删除</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:15px;">
+      <span>${c.icon}  ${c.name}</span>
+      <button onclick="deleteCategory('${c.id}')" style="background:none;border:none;color:var(--expense);font-size:14px;cursor:pointer;padding:4px 8px;border-radius:6px;">删除</button>
     </div>
-  `).join('') || '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:12px;">暂无分类</p>';
+  `).join('') || '<p style="color:var(--label-quaternary);font-size:14px;text-align:center;padding:14px;">暂无分类</p>';
 }
 
 function selectColor(color, el) {
-  document.querySelectorAll('#colorOptions .color-dot').forEach(d => d.classList.remove('selected'));
-  el.classList.add('selected');
+  document.querySelectorAll('#colorOptions .color-dot').forEach(d => { d.style.borderColor = 'transparent'; d.style.transform = ''; });
+  el.style.borderColor = '#000';
+  el.style.transform = 'scale(1.1)';
   $('newCatColor').value = color;
 }
 
 function addCategory() {
   const name = $('newCatName').value.trim();
-  const icon = $('newCatIcon').value.trim() || '📌';
+  if (!name) { showToast('请输入分类名称'); return; }
+  const icon = $('newCatIcon').value.trim() || '⋯';
   const color = $('newCatColor').value;
-  if (!name) { alert('请输入分类名称'); return; }
   const activeTab = document.querySelector('.cat-mgr-tab.active');
-  const type = activeTab ? activeTab.dataset.cmtype : currentType;
-  appData.categories.push({ id: genId(), name, type, icon, color });
+  appData.categories.push({ id: genId(), name, type: activeTab ? activeTab.dataset.cmtype : currentType, icon, color });
   saveData(appData);
   openCatManage();
   renderCategories();
@@ -1177,8 +1158,8 @@ function deleteCategory(id) {
   const cat = appData.categories.find(c => c.id === id);
   if (!cat) return;
   const used = appData.transactions.some(t => t.categoryId === id);
-  if (used && !confirm(`分类"${cat.name}"有交易记录，删除后这些记录将显示为"未分类"，确定删除？`)) return;
-  if (!used && !confirm(`确定删除分类"${cat.name}"？`)) return;
+  const msg = used ? `分类"${cat.name}"有关联记录，删除后显示为"未分类"。确定删除？` : `确定删除"${cat.name}"？`;
+  if (!confirm(msg)) return;
   appData.categories = appData.categories.filter(c => c.id !== id);
   saveData(appData);
   openCatManage();
@@ -1196,9 +1177,8 @@ renderStats();
 
 // Service Worker
 if ('serviceWorker' in navigator) {
-  const swCode = `self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open('bk-v2').then(cache=>cache.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;
-  const blob = new Blob([swCode], { type: 'application/javascript' });
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+  const sw = `self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open('bk-ios').then(cache=>cache.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
 }
 </script>
 </body>
