@@ -630,7 +630,7 @@ function closeModal(){$('modalOverlay').classList.remove('show')}
 
 // === INIT ===
 $('dateInput').value=nowStr();renderCats();renderCatChips();initSM();renderStats();
-if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{let c=r.clone();caches.open('bkv6').then(ca=>ca.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
+if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!=='bkv7').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.open('bkv7').then(ca=>ca.match(e.request).then(c=>{let p=fetch(e.request).then(r=>{if(r.ok){let rc=r.clone();ca.put(e.request,rc)}return r});return c.then(cached=>cached||p).catch(()=>p)})))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
 </script>
 </body>
 </html>
