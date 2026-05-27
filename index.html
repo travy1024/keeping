@@ -372,12 +372,12 @@ const DC = [
 function ld(){let r=localStorage.getItem('bk');return r?JSON.parse(r):{transactions:[],categories:[...DC]}}
 function sv(d){localStorage.setItem('bk',JSON.stringify(d))}
 let app=ld(),curType='expense',selCat=null,fType='all',fCat=null,dPreset='month',sYear,sMonth;
-let _editingId=null,_lastUndo=null,_confirmResolve=null;
-let _jiggle=false,_dragItem=null,_dragGhost=null,_dragStartX=0,_dragStartY=0,_dragOrigIdx=-1;
+let _editingId=null,_lastUndo=null,_undoTimer=null,_confirmResolve=null;
+let _jiggle=false,_dragItem=null,_dragStartX=0,_dragStartY=0,_dragOrigIdx=-1;
 
 function gc(t){return app.categories.filter(c=>c.type===t)}
 const $=id=>document.getElementById(id),fm=n=>(n||0).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}),gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8),nowStr=()=>new Date().toISOString().slice(0,10);
-function ts(m,u){clearInterval(_undoTimer);let t=$('tst');t.innerHTML=u?`${m} <button class="undo-btn" onclick="undoLast()">${u}</button>`:m;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>{t.classList.remove('show');_lastUndo=null},u?4000:2200)}
+function ts(m,u){clearTimeout(_undoTimer);let t=$('tst');t.innerHTML=u?`${m} <button class="undo-btn" onclick="undoLast()">${u}</button>`:m;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>{t.classList.remove('show');_lastUndo=null},u?4000:2200)}
 
 // === HEADER ===
 (function(){let n=new Date();$('navD').textContent=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 周${'日一二三四五六'[n.getDay()]}`})();
@@ -402,10 +402,10 @@ $('amountInput').addEventListener('input',function(){let v=this.value.replace(/[
 
 // === TYPE & CATS ===
 function setType(t){curType=t;selCat=null;exitJiggle();document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));document.querySelector(`.seg .${t==='expense'?'exp':'inc'}`).classList.add('on');renderCats()}
-function selectCat(id){if(_jiggle)return;selCat=id;renderCats()}
+function selectCat(id){if(_jiggle)return;selCat=selCat===id?null:id;renderCats()}
 function renderCats(){
   let g=$('categoryGrid'),cs=gc(curType);
-  g.innerHTML=cs.map((c,i)=>`<div class="cc${c.id===selCat?' sel':''}${_jiggle?' jiggle':''}" data-cat-id="${c.id}" data-idx="${i}" ontouchstart="onCatTouch(event,'${c.id}')" onmousedown="onCatMouse(event,'${c.id}')">
+  g.innerHTML=cs.map((c,i)=>`<div class="cc${c.id===selCat?' sel':''}${_jiggle?' jiggle':''}" data-cat-id="${c.id}" data-idx="${i}" onclick="${_jiggle?'':'selectCat(\`'+c.id+'\`)'}" ontouchstart="onCatTouch(event,'${c.id}')" onmousedown="onCatMouse(event,'${c.id}')">
     <div class="del-badge" onclick="event.stopPropagation();deleteCatItem('${c.id}')">✕</div>
     <div class="ci">${c.icon}</div><span>${c.name}</span>
   </div>`).join('')+`<div class="cc mg" onclick="${_jiggle?'':'openCatManage()'}"><div class="ci" style="background:transparent;font-size:22px">⚙</div><span>编辑</span></div>`;
@@ -630,7 +630,7 @@ function closeModal(){$('modalOverlay').classList.remove('show')}
 
 // === INIT ===
 $('dateInput').value=nowStr();renderCats();renderCatChips();initSM();renderStats();
-if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!=='bkv7').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(caches.open('bkv7').then(ca=>ca.match(e.request).then(c=>{let p=fetch(e.request).then(r=>{if(r.ok){let rc=r.clone();ca.put(e.request,rc)}return r});return c.then(cached=>cached||p).catch(()=>p)})))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
+if('serviceWorker' in navigator){let sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!=='bkv8').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{let c=r.clone();caches.open('bkv8').then(ca=>ca.put(e.request,c));return r}).catch(()=>caches.match(e.request)))})`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{})}
 </script>
 </body>
 </html>
